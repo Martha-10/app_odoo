@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # Apps para API REST y CORS
     'rest_framework',
     'corsheaders',
+    'api', 
 ]
 
 MIDDLEWARE = [

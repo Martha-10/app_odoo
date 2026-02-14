@@ -1,0 +1,20 @@
+# Entorno Virtual
+venv/
+ENV/
+env/
+
+# Python (Django)
+__pycache__/
+*.py[cod]
+db.sqlite3
+.env
+
+# Angular
+node_modules/
+dist/
+.angular/
+.vscode/
+
+# Logs y temporales
+*.log
+npm-debug.log*
