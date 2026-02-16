@@ -1,32 +1,28 @@
 <div class="app-container">
 
-    <header class="navbar">
-        <div class="flex items-center gap-4">
-            <h1>CRM Express</h1>
-
-            <!-- Sync Indicator -->
-            <div class="flex items-center gap-2 text-xs text-green-600 font-medium" *ngIf="!isSyncing">
-                <mat-icon class="text-green-600"
-                    style="font-size: 16px; width: 16px; height: 16px;">check_circle</mat-icon>
-                <span>Synchronized</span>
-            </div>
-            <div class="flex items-center gap-2 text-xs text-blue-500 font-medium" *ngIf="isSyncing">
-                <mat-icon class="animate-spin text-blue-500"
-                    style="font-size: 16px; width: 16px; height: 16px;">sync</mat-icon>
-                <span>Syncing...</span>
-            </div>
-
-            <!-- Instant Search -->
-            <div class="search-container" style="position: relative; margin-left: 20px;">
-                <mat-icon
-                    style="position: absolute; left: 8px; top: 8px; color: #9ca3af; font-size: 18px;">search</mat-icon>
-                <input [formControl]="searchControl" type="text" placeholder="Filter leads..."
-                    style="padding-left: 32px; padding-right: 16px; padding-top: 6px; padding-bottom: 6px; border-radius: 9999px; border: 1px solid #d1d5db; width: 250px;">
+    <header class="header-dark">
+        <!-- Left: Brand Identity -->
+        <div class="brand-section">
+            <div class="brand-title-group">
+                <h1 class="brand-title">CRM Express</h1>
+                <div class="sync-indicator">
+                    <mat-icon *ngIf="!isSyncing" class="sync-icon">check_circle</mat-icon>
+                    <mat-icon *ngIf="isSyncing" class="sync-icon syncing">sync</mat-icon>
+                    <span class="sync-text">{{ isSyncing ? 'Syncing...' : 'Synchronized' }}</span>
+                </div>
             </div>
         </div>
 
-        <button mat-fab extended color="primary" (click)="openDialog()">
-            <mat-icon>add</mat-icon> New Lead
+        <!-- Center: Search -->
+        <div class="search-container-dark">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input [formControl]="searchControl" type="text" placeholder="Filter leads..." class="search-input-dark">
+        </div>
+
+        <!-- Right: Primary Action -->
+        <button class="add-lead-button" (click)="openDialog()">
+            <mat-icon class="button-icon">add</mat-icon>
+            <span>Add Lead</span>
         </button>
     </header>
 
