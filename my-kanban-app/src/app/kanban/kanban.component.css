@@ -1,0 +1,65 @@
+/* Kanban Component Specific Styles */
+
+/* Action Buttons Container */
+.action-buttons {
+    display: flex;
+    gap: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.card:hover .action-buttons {
+    opacity: 1;
+}
+
+/* Card Hover Actions */
+.card-actions {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.kanban-card:hover .card-actions {
+    opacity: 1;
+}
+
+.kanban-card {
+    /* ... existing styles ... */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kanban-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Override Mat Icon Button Size */
+.action-btn {
+    width: 24px !important;
+    height: 24px !important;
+    line-height: 24px !important;
+    padding: 0 !important;
+}
+
+.action-btn .mat-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+    line-height: 16px !important;
+}
+
+/* Border Left Colors */
+.card.border-l-blue {
+    border-left: 4px solid #3b82f6;
+}
+
+.card.border-l-amber {
+    border-left: 4px solid #f59e0b;
+}
+
+.card.border-l-green {
+    border-left: 4px solid #22c55e;
+}
+
+.card.border-l-red {
+    border-left: 4px solid #ef4444;
+}

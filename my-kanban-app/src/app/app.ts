@@ -1,23 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { OportunidadesService, Oportunidad } from './services/oportunidades';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
+import { KanbanComponent } from './kanban/kanban.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule],   // 👈 MUY IMPORTANTE
-  templateUrl: './app.html',
+  imports: [
+    CommonModule,
+    KanbanComponent,
+    MatButtonModule,
+    MatCardModule,
+    MatInputModule,
+    MatDialogModule
+  ],
+  template: '<app-kanban></app-kanban>',
 })
-export class AppComponent implements OnInit {
-
-  oportunidades: Oportunidad[] = [];
-
-  constructor(private oportunidadesService: OportunidadesService) {}
-
-  ngOnInit() {
-    this.oportunidadesService.getOportunidades().subscribe(data => {
-      this.oportunidades = data;
-      console.log(data);
-    });
-  }
-}
+export class AppComponent { }

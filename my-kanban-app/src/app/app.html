@@ -1,8 +1,36 @@
-<h1>Oportunidades</h1>
+<div class="app-container">
+  <header class="navbar">
+    <h1>Odoo CRM Pipeline</h1>
+    <button mat-flat-button color="primary" (click)="openDialog()">
+      <mat-icon>add</mat-icon> New Lead
+    </button>
+  </header>
 
-<div *ngFor="let op of oportunidades">
-  <h3>{{ op.name }}</h3>
-  <p>Revenue: {{ op.expected_revenue }}</p>
-  <p>Stage: {{ op.stage }}</p>
-  <hr>
+  <div class="kanban-wrapper" cdkDropListGroup>
+    <div class="column" *ngFor="let col of columns">
+      <div class="column-header">
+        <h2>{{ col.title }}</h2>
+        <span class="count-badge">{{ col.items.length }}</span>
+      </div>
+
+      <div class="card-list" cdkDropList [cdkDropListData]="col.items" [id]="col.title"
+        (cdkDropListDropped)="drop($event)" [cdkDropListConnectedTo]="connectedLists">
+
+        <div class="card" *ngFor="let item of col.items" cdkDrag>
+          <div class="card-content" (click)="openDialog(item)">
+            <div class="card-header">
+              <span class="stage-badge" [class]="'badge-' + item.stage.toLowerCase()">{{ item.stage }}</span>
+              <button mat-icon-button color="warn" class="delete-btn"
+                (click)="$event.stopPropagation(); deleteLead(item.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <h3>{{ item.name }}</h3>
+            <p class="revenue">{{ item.expected_revenue | currency }}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </div>

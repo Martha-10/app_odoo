@@ -1,0 +1,121 @@
+<div class="app-container">
+
+    <header class="navbar">
+        <div class="flex items-center gap-4">
+            <h1>CRM Express</h1>
+
+            <!-- Sync Indicator -->
+            <div class="flex items-center gap-2 text-xs text-green-600 font-medium" *ngIf="!isSyncing">
+                <mat-icon class="text-green-600"
+                    style="font-size: 16px; width: 16px; height: 16px;">check_circle</mat-icon>
+                <span>Synchronized</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-blue-500 font-medium" *ngIf="isSyncing">
+                <mat-icon class="animate-spin text-blue-500"
+                    style="font-size: 16px; width: 16px; height: 16px;">sync</mat-icon>
+                <span>Syncing...</span>
+            </div>
+
+            <!-- Instant Search -->
+            <div class="search-container" style="position: relative; margin-left: 20px;">
+                <mat-icon
+                    style="position: absolute; left: 8px; top: 8px; color: #9ca3af; font-size: 18px;">search</mat-icon>
+                <input [formControl]="searchControl" type="text" placeholder="Filter leads..."
+                    style="padding-left: 32px; padding-right: 16px; padding-top: 6px; padding-bottom: 6px; border-radius: 9999px; border: 1px solid #d1d5db; width: 250px;">
+            </div>
+        </div>
+
+        <button mat-fab extended color="primary" (click)="openDialog()">
+            <mat-icon>add</mat-icon> New Lead
+        </button>
+    </header>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-20">
+        <div class="flex flex-col items-center gap-4">
+            <mat-icon class="animate-spin text-blue-500"
+                style="font-size: 48px; width: 48px; height: 48px;">sync</mat-icon>
+            <span class="text-gray-600 text-lg">Cargando oportunidades...</span>
+        </div>
+    </div>
+
+    <!-- Kanban Board -->
+    <div *ngIf="!isLoading" class="kanban-wrapper" cdkDropListGroup>
+
+        <div *ngFor="let col of columns" class="column">
+
+            <!-- Column Header -->
+            <div class="column-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <h2>{{ col.title }}</h2>
+                    <span class="count-badge">{{ col.items.length }}</span>
+                </div>
+                <!-- Total Revenue -->
+                <span style="font-size: 0.75rem; font-weight: bold; color: #6b7280;">{{ col.totalRevenue |
+                    currency:'USD':'symbol':'1.0-0' }}</span>
+            </div>
+
+            <!-- Drop List -->
+            <div cdkDropList [cdkDropListData]="col.items" [id]="col.id" (cdkDropListDropped)="drop($event)"
+                class="card-list" [cdkDropListConnectedTo]="connectedLists">
+
+                <!-- Card -->
+                <div *ngFor="let item of col.items" cdkDrag class="card" [ngClass]="{
+            'border-l-blue': col.title === 'New',
+            'border-l-amber': col.title === 'Qualified' || col.title === 'Proposition',
+            'border-l-green': col.title === 'Won',
+            'border-l-red': col.title === 'Lost'
+          }">
+
+                    <!-- Age Alert -->
+                    <div *ngIf="isOld(item.create_date)"
+                        style="position: absolute; top: 8px; right: 8px; color: #f87171;"
+                        title="Lead is older than 5 days">
+                        <mat-icon style="font-size: 16px; width: 16px; height: 16px;">access_time</mat-icon>
+                    </div>
+
+                    <div (click)="openDialog(item)">
+                        <!-- Header: Validate Actions & Badges -->
+                        <div class="card-header">
+                            <span class="stage-badge" [ngClass]="{
+                  'badge-new': col.title === 'New',
+                  'badge-qualified': col.title === 'Qualified' || col.title === 'Proposition',
+                  'badge-won': col.title === 'Won'
+                }">
+                                {{ item.stage }}
+                            </span>
+
+                            <div class="card-actions">
+                                <!-- Edit Button (Icon) -->
+                                <button mat-icon-button class="action-btn text-gray-600 hover:text-blue-600"
+                                    (click)="$event.stopPropagation(); openDialog(item)">
+                                    <mat-icon style="font-size: 18px;">edit</mat-icon>
+                                </button>
+                                <!-- Delete Button (Icon) -->
+                                <button mat-icon-button class="action-btn text-gray-400 hover:text-red-500"
+                                    (click)="$event.stopPropagation(); deleteLead(item.id)">
+                                    <mat-icon style="font-size: 18px;">delete</mat-icon>
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <h3>{{ item.name }}</h3>
+
+                        <div
+                            style="margin-top: 12px; display: flex; justify-content: space-between; align-items: flex-end;">
+                            <span class="revenue">Revenue</span>
+                            <span style="font-weight: bold; color: #374151;">{{ item.expected_revenue |
+                                currency:'USD':'symbol':'1.0-0' }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Drag Placeholder Custom -->
+                    <div *cdkDragPlaceholder class="opacity-0"></div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
