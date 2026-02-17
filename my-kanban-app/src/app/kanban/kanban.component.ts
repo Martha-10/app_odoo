@@ -58,8 +58,10 @@ export class KanbanComponent implements OnInit, OnDestroy {
 
     // Polling Subscription
     private pollingSubscription: Subscription | undefined;
-    isSyncing = false; // Visual indicator state
-    isLoading = true; // Initial loading state
+    // State flags
+    isSyncing = false;
+    isLoading = true;
+    isDragging = false; // New flag to pause polling
 
     constructor(
         private crmService: CrmService,
@@ -69,6 +71,7 @@ export class KanbanComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit() {
+        console.log('CRM Express KanbanComponent v2.1 loaded');
         this.refreshData();
 
         // Reactive search
@@ -81,7 +84,10 @@ export class KanbanComponent implements OnInit, OnDestroy {
 
         // Start Polling every 20 seconds
         this.pollingSubscription = interval(20000).subscribe(() => {
-            this.refreshData(true);
+            // Pause polling if user is currently dragging an item
+            if (!this.isDragging) {
+                this.refreshData(true);
+            }
         });
     }
 
@@ -92,33 +98,39 @@ export class KanbanComponent implements OnInit, OnDestroy {
     }
 
     refreshData(isPolling = false) {
-        if (isPolling) {
-            this.isSyncing = true;
-        } else {
-            this.isLoading = true;
-        }
+        // Use setTimeout to avoid NG0100 if called during change detection
+        setTimeout(() => {
+            if (isPolling) {
+                this.isSyncing = true;
+            } else {
+                this.isLoading = true;
+            }
+            this.cdr.detectChanges();
+        }, 0);
 
         this.crmService.getLeads().subscribe({
             next: (data) => {
                 this.allLeads = data;
                 this.processStages(data);
-                // Only re-filter if we are polling, to avoid disrupting user if they are searching?
-                // Actually, we must re-filter to show new data. 
-                // To avoid disrupting UX, we should check if user is dragging? 
-                // For simplicity, we just update. Angular's change detection handles DOM diffing well.
                 this.filterLeads(this.searchControl.value || '');
 
-                if (isPolling) {
-                    setTimeout(() => this.isSyncing = false, 1000); // Show "Syncing" for at least 1s
-                } else {
-                    this.isLoading = false;
-                }
+                setTimeout(() => {
+                    if (isPolling) {
+                        setTimeout(() => {
+                            this.isSyncing = false;
+                            this.cdr.detectChanges();
+                        }, 1000); // Show "Syncing" for at least 1s
+                    } else {
+                        this.isLoading = false;
+                        this.cdr.detectChanges();
+                    }
+                }, 0);
             },
             error: (err) => {
-                // Don't show snackbar on polling error to avoid spamming user
                 if (!isPolling) this.showNotification('Error fetching data from Odoo', 'error');
                 this.isSyncing = false;
                 this.isLoading = false;
+                this.cdr.detectChanges();
             }
         });
     }
@@ -184,6 +196,16 @@ export class KanbanComponent implements OnInit, OnDestroy {
             console.log(`Column "${col.title}": ${col.items.length} items, revenue: $${col.totalRevenue}`);
         });
         console.log('===== END filterLeads =====');
+    }
+
+    public dragStarted = () => {
+        console.log('Drag started, polling paused');
+        this.isDragging = true;
+    }
+
+    public dragEnded = () => {
+        console.log('Drag ended, polling resumed');
+        this.isDragging = false;
     }
 
     drop(event: CdkDragDrop<Lead[]>) {

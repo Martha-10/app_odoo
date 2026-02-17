@@ -56,12 +56,13 @@
                 class="card-list" [cdkDropListConnectedTo]="connectedLists">
 
                 <!-- Card -->
-                <div *ngFor="let item of col.items" cdkDrag class="card" [ngClass]="{
-            'border-l-blue': col.title === 'New',
-            'border-l-amber': col.title === 'Qualified' || col.title === 'Proposition',
-            'border-l-green': col.title === 'Won',
-            'border-l-red': col.title === 'Lost'
-          }">
+                <div *ngFor="let item of col.items" cdkDrag (cdkDragStarted)="dragStarted()"
+                    (cdkDragEnded)="dragEnded()" class="card" [ngClass]="{
+                        'border-l-blue': col.title === 'New',
+                        'border-l-amber': col.title === 'Qualified' || col.title === 'Proposition',
+                        'border-l-green': col.title === 'Won',
+                        'border-l-red': col.title === 'Lost'
+                     }">
 
                     <!-- Age Alert -->
                     <div *ngIf="isOld(item.create_date)"

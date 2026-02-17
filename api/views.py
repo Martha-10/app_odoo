@@ -1,6 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import odoorpc
+import os
+import traceback
+
+def log_error(msg):
+    with open('/home/martha/Desktop/app_odoo/api_errors.txt', 'a') as f:
+        f.write(msg + "\n" + "="*50 + "\n")
 
 
 class OportunidadesList(APIView):
@@ -11,7 +17,7 @@ class OportunidadesList(APIView):
 
             ids = odoo.env['crm.lead'].search([])
 
-            leads = odoo.env['crm.lead'].read(ids, ['name', 'expected_revenue', 'stage_id', 'create_date'])
+            leads = odoo.env['crm.lead'].read(ids, ['name', 'expected_revenue', 'stage_id', 'create_date', 'type'])
 
             data = []
             for lead in leads:
@@ -21,13 +27,17 @@ class OportunidadesList(APIView):
                     "expected_revenue": lead["expected_revenue"],
                     "stage": lead["stage_id"][1] if lead["stage_id"] else None,
                     "stage_id": lead["stage_id"][0] if lead["stage_id"] else None,
-                    "create_date": lead["create_date"]
+                    "create_date": lead["create_date"],
+                    "type": lead["type"]
                 })
 
             return Response(data)
 
         except Exception as e:
-            return Response({"error": str(e)}, status=500)
+            import traceback
+            error_details = {"error": str(e), "traceback": traceback.format_exc()}
+            print(f"DEBUG GET ERROR: {error_details}")
+            return Response(error_details, status=500)
 
     def post(self, request):
         try:
@@ -73,13 +83,22 @@ class OportunidadDetail(APIView):
                 vals['name'] = request.data['name']
             if 'expected_revenue' in request.data:
                 vals['expected_revenue'] = request.data['expected_revenue']
+            if 'type' in request.data:
+                vals['type'] = request.data['type']
 
             odoo.env['crm.lead'].write([pk], vals)
 
             return Response({"success": True, "id": pk})
 
         except Exception as e:
-            return Response({"error": str(e)}, status=500)
+            error_details = {
+                "error": str(e), 
+                "traceback": traceback.format_exc(),
+                "data_attempted": vals,
+                "pk_attempted": pk
+            }
+            log_error(f"DEBUG PATCH ERROR: {error_details}")
+            return Response(error_details, status=500)
 
     def delete(self, request, pk):
         try:

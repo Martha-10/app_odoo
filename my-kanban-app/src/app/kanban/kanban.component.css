@@ -40,11 +40,20 @@
     padding: 0 !important;
 }
 
-.action-btn .mat-icon {
-    font-size: 16px !important;
-    width: 16px !important;
-    height: 16px !important;
-    line-height: 16px !important;
+/* Global Material Icons Fix */
+.mat-icon {
+    font-family: 'Material Icons' !important;
+    display: inline-block;
+    vertical-align: middle;
+    overflow: visible !important;
+    /* Prevent text clipping if ligature fails */
+}
+
+/* Specific Header Icon Adjustments */
+.search-icon,
+.button-icon,
+.sync-icon {
+    font-family: 'Material Icons' !important;
 }
 
 /* Border Left Colors */
