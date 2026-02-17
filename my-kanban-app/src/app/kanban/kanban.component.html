@@ -71,26 +71,27 @@
                         <mat-icon style="font-size: 16px; width: 16px; height: 16px;">access_time</mat-icon>
                     </div>
 
-                    <div (click)="openDialog(item)">
+                    <!-- Card Content (Clickable areas inside are gone, replaced by specific buttons) -->
+                    <div class="card-content-wrapper">
                         <!-- Header: Validate Actions & Badges -->
                         <div class="card-header">
                             <span class="stage-badge" [ngClass]="{
-                  'badge-new': col.title === 'New',
-                  'badge-qualified': col.title === 'Qualified' || col.title === 'Proposition',
-                  'badge-won': col.title === 'Won'
-                }">
+                                'badge-new': col.title === 'New',
+                                'badge-qualified': col.title === 'Qualified' || col.title === 'Proposition',
+                                'badge-won': col.title === 'Won'
+                            }">
                                 {{ item.stage }}
                             </span>
 
                             <div class="card-actions">
-                                <!-- Edit Button (Icon) -->
-                                <button mat-icon-button class="action-btn text-gray-600 hover:text-blue-600"
-                                    (click)="$event.stopPropagation(); openDialog(item)">
+                                <!-- Edit Button (Icon) - Independent -->
+                                <button mat-icon-button class="action-btn text-gray-400 hover:text-blue-500"
+                                    (click)="$event.stopPropagation(); openDialog(item)" title="Editar Lead">
                                     <mat-icon style="font-size: 18px;">edit</mat-icon>
                                 </button>
-                                <!-- Delete Button (Icon) -->
+                                <!-- Delete Button (Icon) - Independent -->
                                 <button mat-icon-button class="action-btn text-gray-400 hover:text-red-500"
-                                    (click)="$event.stopPropagation(); deleteLead(item.id)">
+                                    (click)="$event.stopPropagation(); deleteLead(item.id)" title="Eliminar Lead">
                                     <mat-icon style="font-size: 18px;">delete</mat-icon>
                                 </button>
                             </div>

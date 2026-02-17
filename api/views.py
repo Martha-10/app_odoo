@@ -110,4 +110,7 @@ class OportunidadDetail(APIView):
             return Response({"success": True, "id": pk}, status=204)
 
         except Exception as e:
-            return Response({"error": str(e)}, status=500)
+            import traceback
+            error_details = {"error": str(e), "traceback": traceback.format_exc()}
+            log_error(f"DEBUG DELETE ERROR: {error_details}")
+            return Response(error_details, status=500)

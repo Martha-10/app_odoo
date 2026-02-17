@@ -6,8 +6,8 @@ odoo = odoorpc.ODOO('localhost', port=8069)
 # Login con tus credenciales de Odoo
 odoo.login(
     'odoo',                          # nombre de la base de datos
-    'marthagarcia10b@gmail.com',     # tu usuario (correo)
-    'Qwe.123*'                       # tu contraseña
+    'odoo',     # tu usuario (correo)
+    'odoo'                       # tu contraseña
 )
 
 # Leer oportunidades (crm.lead)

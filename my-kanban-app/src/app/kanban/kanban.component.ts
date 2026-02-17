@@ -200,12 +200,20 @@ export class KanbanComponent implements OnInit, OnDestroy {
 
     public dragStarted = () => {
         console.log('Drag started, polling paused');
-        this.isDragging = true;
+        // Wrap in setTimeout to avoid NG0100 with cdk-drop-list-receiving
+        setTimeout(() => {
+            this.isDragging = true;
+            this.cdr.detectChanges();
+        }, 0);
     }
 
     public dragEnded = () => {
         console.log('Drag ended, polling resumed');
-        this.isDragging = false;
+        // Wrap in setTimeout to avoid NG0100 with cdk-drop-list-receiving
+        setTimeout(() => {
+            this.isDragging = false;
+            this.cdr.detectChanges();
+        }, 0);
     }
 
     drop(event: CdkDragDrop<Lead[]>) {
@@ -357,9 +365,17 @@ export class KanbanComponent implements OnInit, OnDestroy {
                 this.crmService.deleteLead(id).subscribe({
                     next: () => {
                         this.showNotification('Lead eliminado correctamente', 'success');
-                        this.refreshData();
+
+                        // Optimize: Update local UI immediately instead of full refresh
+                        this.allLeads = this.allLeads.filter(l => l.id !== id);
+                        this.filterLeads(this.searchControl.value || '');
+                        this.cdr.detectChanges();
                     },
-                    error: () => this.showNotification('Error deleting lead', 'error')
+                    error: (err) => {
+                        console.error('Delete failed:', err);
+                        // User specifically asked for this message on failure
+                        this.showNotification('Odoo no permite eliminar este registro', 'error');
+                    }
                 });
             }
         });

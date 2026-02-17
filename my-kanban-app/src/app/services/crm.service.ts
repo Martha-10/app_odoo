@@ -18,12 +18,12 @@ export interface Lead {
 })
 export class CrmService {
 
-    private apiUrl = 'http://127.0.0.1:8000/api/oportunidades';
+    private apiUrl = 'http://127.0.0.1:8000/api';
 
     constructor(private http: HttpClient) { }
 
     getLeads(): Observable<Lead[]> {
-        return this.http.get<Lead[]>(`${this.apiUrl}/`).pipe(
+        return this.http.get<Lead[]>(`${this.apiUrl}/oportunidades/`).pipe(
             map(leads => {
                 // DEBUG: Log raw data from Odoo
                 console.log('===== DEBUG: Raw data from Odoo =====');
@@ -52,7 +52,7 @@ export class CrmService {
     createLead(lead: Omit<Lead, 'id' | 'create_date'>): Observable<Lead> {
         // Ensure new leads are created as opportunities
         const opportunityLead = { ...lead, type: 'opportunity' };
-        return this.http.post<Lead>(`${this.apiUrl}/`, opportunityLead);
+        return this.http.post<Lead>(`${this.apiUrl}/oportunidades/`, opportunityLead);
     }
 
     updateLead(id: number, changes: Partial<Lead>): Observable<any> {
@@ -60,7 +60,7 @@ export class CrmService {
             console.error('updateLead called with invalid ID:', id);
             throw new Error('ID de lead no válido');
         }
-        return this.http.patch(`${this.apiUrl}/${id}/`, changes);
+        return this.http.patch(`${this.apiUrl}/oportunidades/${id}/`, changes);
     }
 
     deleteLead(id: number): Observable<any> {
@@ -68,6 +68,7 @@ export class CrmService {
             console.error('deleteLead called with invalid ID:', id);
             throw new Error('ID de lead no válido');
         }
-        return this.http.delete(`${this.apiUrl}/${id}/`);
+        // Correct URL structure as per user request: /api/oportunidades/ID/
+        return this.http.delete(`${this.apiUrl}/oportunidades/${id}/`);
     }
 }
