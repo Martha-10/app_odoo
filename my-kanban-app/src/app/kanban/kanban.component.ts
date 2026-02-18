@@ -353,7 +353,7 @@ export class KanbanComponent implements OnInit, OnDestroy {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
             width: '400px',
             data: {
-                message: '¿Eliminar este lead permanentemente?',
+                message: '¿Estás seguro de eliminar esta oportunidad?',
                 confirmText: 'Eliminar',
                 cancelText: 'Cancelar',
                 confirmColor: 'warn' as const

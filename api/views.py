@@ -9,15 +9,25 @@ def log_error(msg):
         f.write(msg + "\n" + "="*50 + "\n")
 
 
+def get_odoo_connection():
+    # Centralized configuration
+    host = 'localhost' 
+    port = 8069
+    db = 'odoo'
+    user = 'marthagarcia10b@gmail.com'
+    password = 'Qwe.123*'
+    
+    odoo = odoorpc.ODOO(host, port=port)
+    odoo.login(db, user, password)
+    return odoo
+
+
 class OportunidadesList(APIView):
     def get(self, request):
         try:
-            odoo = odoorpc.ODOO('localhost', port=8069)
-            odoo.login('odoo', 'marthagarcia10b@gmail.com', 'Qwe.123*')
-
+            odoo = get_odoo_connection()
             ids = odoo.env['crm.lead'].search([])
-
-            leads = odoo.env['crm.lead'].read(ids, ['name', 'expected_revenue', 'stage_id', 'create_date', 'type'])
+            leads = odoo.env['crm.lead'].read(ids, ['name', 'expected_revenue', 'stage_id', 'create_date', 'type', 'priority'])
 
             data = []
             for lead in leads:
@@ -28,21 +38,20 @@ class OportunidadesList(APIView):
                     "stage": lead["stage_id"][1] if lead["stage_id"] else None,
                     "stage_id": lead["stage_id"][0] if lead["stage_id"] else None,
                     "create_date": lead["create_date"],
-                    "type": lead["type"]
+                    "type": lead["type"],
+                    "priority": lead.get("priority", 0)
                 })
 
             return Response(data)
 
         except Exception as e:
-            import traceback
             error_details = {"error": str(e), "traceback": traceback.format_exc()}
-            print(f"DEBUG GET ERROR: {error_details}")
+            log_error(f"DEBUG GET ERROR: {error_details}")
             return Response(error_details, status=500)
 
     def post(self, request):
         try:
-            odoo = odoorpc.ODOO('localhost', port=8069)
-            odoo.login('odoo', 'marthagarcia10b@gmail.com', 'Qwe.123*')
+            odoo = get_odoo_connection()
 
             vals = {
                 'name': request.data.get('name'),
@@ -55,7 +64,7 @@ class OportunidadesList(APIView):
 
             new_id = odoo.env['crm.lead'].create(vals)
             
-            # Fetch the created record to return full details including stage name
+            # Fetch the created record to return full details
             lead = odoo.env['crm.lead'].read([new_id], ['name', 'expected_revenue', 'stage_id'])[0]
 
             return Response({
@@ -67,14 +76,15 @@ class OportunidadesList(APIView):
             }, status=201)
 
         except Exception as e:
-            return Response({"error": str(e)}, status=500)
+            error_details = {"error": str(e), "traceback": traceback.format_exc()}
+            log_error(f"DEBUG POST ERROR: {error_details}")
+            return Response(error_details, status=500)
 
 
 class OportunidadDetail(APIView):
     def patch(self, request, pk):
         try:
-            odoo = odoorpc.ODOO('localhost', port=8069)
-            odoo.login('odoo', 'marthagarcia10b@gmail.com', 'Qwe.123*')
+            odoo = get_odoo_connection()
 
             vals = {}
             if 'stage_id' in request.data:
@@ -94,7 +104,7 @@ class OportunidadDetail(APIView):
             error_details = {
                 "error": str(e), 
                 "traceback": traceback.format_exc(),
-                "data_attempted": vals,
+                "data_attempted": vals if 'vals' in locals() else {},
                 "pk_attempted": pk
             }
             log_error(f"DEBUG PATCH ERROR: {error_details}")
@@ -102,15 +112,11 @@ class OportunidadDetail(APIView):
 
     def delete(self, request, pk):
         try:
-            odoo = odoorpc.ODOO('localhost', port=8069)
-            odoo.login('odoo', 'marthagarcia10b@gmail.com', 'Qwe.123*')
-
+            odoo = get_odoo_connection()
             odoo.env['crm.lead'].unlink([pk])
-
             return Response({"success": True, "id": pk}, status=204)
 
         except Exception as e:
-            import traceback
             error_details = {"error": str(e), "traceback": traceback.format_exc()}
             log_error(f"DEBUG DELETE ERROR: {error_details}")
             return Response(error_details, status=500)

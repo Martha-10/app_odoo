@@ -83,14 +83,22 @@
                                 {{ item.stage }}
                             </span>
 
+                            <!-- Priority Stars -->
+                            <div class="priority-stars">
+                                <mat-icon *ngFor="let star of [1,2,3]"
+                                    [ngClass]="{'star-filled': (item.priority || 0) >= star}">
+                                    {{ (item.priority || 0) >= star ? 'star' : 'star_border' }}
+                                </mat-icon>
+                            </div>
+
                             <div class="card-actions">
                                 <!-- Edit Button (Icon) - Independent -->
-                                <button mat-icon-button class="action-btn text-gray-400 hover:text-blue-500"
+                                <button mat-icon-button class="action-btn"
                                     (click)="$event.stopPropagation(); openDialog(item)" title="Editar Lead">
-                                    <mat-icon style="font-size: 18px;">edit</mat-icon>
+                                    <mat-icon style="font-size: 18px; color: #3b82f6;">edit</mat-icon>
                                 </button>
                                 <!-- Delete Button (Icon) - Independent -->
-                                <button mat-icon-button class="action-btn text-gray-400 hover:text-red-500"
+                                <button mat-icon-button class="action-btn" color="warn"
                                     (click)="$event.stopPropagation(); deleteLead(item.id)" title="Eliminar Lead">
                                     <mat-icon style="font-size: 18px;">delete</mat-icon>
                                 </button>

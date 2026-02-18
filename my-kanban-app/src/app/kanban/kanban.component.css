@@ -18,7 +18,7 @@
     transition: opacity 0.2s ease-in-out;
 }
 
-.kanban-card:hover .card-actions {
+.card:hover .card-actions {
     opacity: 1;
 }
 

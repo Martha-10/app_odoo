@@ -11,6 +11,7 @@ export interface Lead {
     stage_id: number | any[];
     create_date: string;
     type?: string; // Add type field
+    priority?: number; // Add priority field
 }
 
 @Injectable({
