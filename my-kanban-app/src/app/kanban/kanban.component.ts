@@ -48,6 +48,14 @@ export class KanbanComponent implements OnInit, OnDestroy {
     // Map to store stage names and their IDs found in data
     stageMap = new Map<string, number>();
 
+    // Translation map for Odoo stages (Spanish) to Column titles (English)
+    private stageTitleMap: { [key: string]: string } = {
+        'Nuevo': 'New',
+        'Calificado': 'Qualified',
+        'Propuesta': 'Proposition',
+        'Ganado': 'Won'
+    };
+
     // Columns
     columns: Column[] = [
         { title: 'New', id: 'New', items: [], totalRevenue: 0 },
@@ -181,12 +189,15 @@ export class KanbanComponent implements OnInit, OnDestroy {
         // Distribute and filter
         this.allLeads.forEach(lead => {
             if (lead.name.toLowerCase().includes(term)) {
-                const column = this.columns.find(col => col.title === lead.stage);
+                // Try to find column by title or by mapped title
+                const mappedTitle = this.stageTitleMap[lead.stage] || lead.stage;
+                const column = this.columns.find(col => col.title === mappedTitle || col.title === lead.stage);
+
                 if (column) {
                     column.items.push(lead);
                     column.totalRevenue += lead.expected_revenue;
                 } else {
-                    console.warn('No column found for stage:', lead.stage, 'Available columns:', this.columns.map(c => c.title));
+                    console.warn('No column found for stage:', lead.stage, 'Mapped to:', mappedTitle, 'Available columns:', this.columns.map(c => c.title));
                 }
             }
         });

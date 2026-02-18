@@ -14,8 +14,8 @@ def get_odoo_connection():
     host = 'localhost' 
     port = 8069
     db = 'odoo'
-    user = 'marthagarcia10b@gmail.com'
-    password = 'Qwe.123*'
+    user = 'odoo'
+    password = 'odoo'
     
     odoo = odoorpc.ODOO(host, port=port)
     odoo.login(db, user, password)
@@ -39,7 +39,7 @@ class OportunidadesList(APIView):
                     "stage_id": lead["stage_id"][0] if lead["stage_id"] else None,
                     "create_date": lead["create_date"],
                     "type": lead["type"],
-                    "priority": lead.get("priority", 0)
+                    "priority": int(lead.get("priority", 0))
                 })
 
             return Response(data)
